@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sage</title>
+</head>
+<style>
+    body, html {
+        background-color: black;
+        font-family: 'Courier New', Courier, monospace;
+        text-align: center;
+    }
+
+    p {
+        color: white;
+        padding-bottom: 400px;
+    }
+
+    input[type=text] {
+        outline: none;
+        border: none;
+        border-bottom: 1px solid grey;
+        background-color: transparent;
+        color: white;
+        font-size: 50px;
+        padding: 10px;
+    }
+</style>
+<body>
+    <p id="response-text"></p>
+    <input id="query" type="text" placeholder="Talk to Sage..." onkeydown="if(event.key==='Enter'){send()}">
+
+    <script>
+        const responseText = document.getElementById("response-text");
+        const queryInput = document.getElementById("query");
+
+        async function send() {
+            const query = queryInput.value.trim();   
+            if (!query) return;
+            queryInput.value = "";
+
+            try {
+                const response = await fetch("/process", {
+                    method: "POST",
+                    headers: { "Content-Type": "text/plain" },
+                    body: query
+                });
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                responseText.textContent = await response.text();
+            } catch (err) {
+                responseText.textContent = "Something went wrong: " + err.message;
+            }
+        }
+    </script>
+</body>
+</html>
